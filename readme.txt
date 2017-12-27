@@ -1,0 +1,5 @@
+datasetDivision    将原始数据集及对应label文件分为train和test两部分
+get_filelist	获得指定路径下的所有要求格式的文件的路径
+imageChecker	将指定路径下python无法正常读取的图像文件找出来
+imageCroper	将指定图片按照RBOX数据进行切割
+socket_for_image	使用python和socket协议实现图片的传输
