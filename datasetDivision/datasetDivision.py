@@ -53,7 +53,7 @@ def datasetDivisionSaver(imageList, labelList, savePath):
         #f.write('\n')
     f.close()
 
-def datasetDivision(fileListDir, ratio):
+def datasetDivision(fileListDir, savePath, ratio):
     '''
         对指定路径下的数据集按照指定的比例分为train和test两部分，该数据及由jpg图像以及与图像同名的txt格式label文件组成
         输入：
@@ -62,8 +62,8 @@ def datasetDivision(fileListDir, ratio):
         输出：
     '''
     #建立结果保存路径
-    trainPath = os.path.join(fileListDir, 'Train')
-    testPath = os.path.join(fileListDir, 'Test')
+    trainPath = os.path.join(savePath, 'train')
+    testPath = os.path.join(savePath, 'test')
     if not os.path.exists(trainPath):#如果不存在，则创立文件夹
         os.mkdir(trainPath)
     if not os.path.exists(testPath):#如果不存在，则创立文件夹
@@ -71,7 +71,7 @@ def datasetDivision(fileListDir, ratio):
 
     #获得路径列表
     imageList = getfilelist(fileListDir)
-    labelList = getfilelist(fileListDir, '.txt')
+    labelList = [i.replace('.jpg', '.txt')for i in imageList]
 
     #检查image和label是否顺序对应
     lenc = len(imageList)
@@ -79,7 +79,7 @@ def datasetDivision(fileListDir, ratio):
         image = os.path.basename(imageList[i]).split('.')[0]
         label = os.path.basename(labelList[i]).split('.')[0]
         if(image!=label):
-            print("check fail")   
+            print("check fail",image,'----',label)   
     
     #随机分割为train和test
     index = list(range(lenc))
@@ -90,12 +90,12 @@ def datasetDivision(fileListDir, ratio):
     trainImageList = [imageList[i] for i in index[gate : lenc]]
     trainLabelList = [labelList[i] for i in index[gate : lenc]]
 
-    #保存风格结果
+    #保存分割结果
     datasetDivisionSaver(testImageList, testLabelList, testPath)
     datasetDivisionSaver(trainImageList, trainLabelList, trainPath)   
 
 def main(_):
-    datasetDivision(FLAGS.fileListDir, FLAGS.ratio)
+    datasetDivision(FLAGS.fileListDir, FLAGS.savePath, FLAGS.ratio)
 
     
 if __name__ == '__main__':
@@ -107,6 +107,12 @@ if __name__ == '__main__':
       default='',
       help="Path to files"
     )
+    parser.add_argument(
+      '--savePath',
+      type=str,
+      default='',
+      help="Path to save"
+    )    
     parser.add_argument(
       '--ratio',
       type=int,
